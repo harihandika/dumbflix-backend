@@ -20,6 +20,21 @@ type FilmResponse struct {
 	Desc          string           `json:"desc"`
 }
 
+type FilmCategory struct {
+	ID            int              `json:"id" `
+	Title         string           `json:"title"`
+	ThumbnailFilm string           `json:"image"`
+	Year          string           `json:"year"`
+	Category      CategoryResponse `json:"-"`
+	CategoryID    int              `json:"-"`
+	Desc          string           `json:"desc"`
+}
+
 func (FilmResponse) TableName() string {
+	return "films"
+}
+
+// cek
+func (FilmCategory) TableName() string {
 	return "films"
 }

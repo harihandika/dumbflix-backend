@@ -25,7 +25,7 @@ func main() {
 	database.RunMigration()
 
 	r := mux.NewRouter()
-	
+
 	routes.RouteInit(r.PathPrefix("/api/v1").Subrouter())
 
 	var AllowedHeaders = handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})

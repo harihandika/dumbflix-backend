@@ -56,7 +56,6 @@ func UploadFile(next http.HandlerFunc) http.HandlerFunc {
 
 		// write this byte array to our temporary file
 		tempFile.Write(fileBytes)
-
 		data := tempFile.Name()
 		filename := data[8:] // split uploads/
 

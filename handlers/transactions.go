@@ -6,8 +6,8 @@ import (
 	"dumbflix/models"
 	"dumbflix/repositories"
 	"encoding/json"
-	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -34,7 +34,9 @@ func (h *handlerTransaction) FindTransactions(w http.ResponseWriter, r *http.Req
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(err)
 	}
-
+	// for i, p := range films {
+	// 	films[i].ThumbnailFilm = os.Getenv("PATH_FILE") + p.ThumbnailFilm
+	// }
 	w.WriteHeader(http.StatusOK)
 	response := dto.SuccessResult{Code: http.StatusOK, Data: categorys}
 	json.NewEncoder(w).Encode(response)
@@ -64,13 +66,12 @@ func (h *handlerTransaction) CreateTransaction(w http.ResponseWriter, r *http.Re
 	userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
 	userId := int(userInfo["id"].(float64))
 
-	fmt.Println(userId)
 	dataContex := r.Context().Value("dataFile") // add this code
 	filename := dataContex.(string)
-	user, _ := strconv.Atoi(r.FormValue("user"))
+	// user, _ := strconv.Atoi(r.FormValue("user"))
 
 	request := transactionsdto.CreateTransactionRequest{
-		UserID:  user,
+		UserID:  userId,
 		Status:  r.FormValue("status"),
 		Attache: filename,
 	}
@@ -90,7 +91,7 @@ func (h *handlerTransaction) CreateTransaction(w http.ResponseWriter, r *http.Re
 	transaction := models.Transaction{
 		StartDate: StartDate,
 		DueDate:   DueDate,
-		Attache:   filename,
+		Attache:   os.Getenv("PATH_FILE") + filename,
 		Status:    request.Status,
 		UserID:    request.UserID,
 	}
@@ -100,6 +101,7 @@ func (h *handlerTransaction) CreateTransaction(w http.ResponseWriter, r *http.Re
 		w.WriteHeader(http.StatusInternalServerError)
 		response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
 		json.NewEncoder(w).Encode(response)
+		return
 	}
 
 	transaction, _ = h.TransactionRepository.GetTransaction(data.ID)
@@ -135,6 +137,8 @@ func (h *handlerTransaction) UpdateTransaction(w http.ResponseWriter, r *http.Re
 	if request.Attache != "" {
 		transaction.Attache = request.Attache
 	}
+	// fmt.Println("ini transaksi", transaction)
+	// fmt.Println("req", transaction.Attache)
 
 	data, err := h.TransactionRepository.UpdateTransaction(transaction)
 	if err != nil {

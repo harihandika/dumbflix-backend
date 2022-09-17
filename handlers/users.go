@@ -4,6 +4,7 @@ import (
 	dto "dumbflix/dto/result"
 	usersdto "dumbflix/dto/users"
 	"dumbflix/models"
+	"dumbflix/pkg/bcrypt"
 	"dumbflix/repositories"
 	"encoding/json"
 	"fmt"
@@ -116,6 +117,13 @@ func (h *handlerUser) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	password, err := bcrypt.HashingPassword(request.Password)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+	}
+
 	if request.Name != "" {
 		user.FullName = request.Name
 	}
@@ -125,7 +133,7 @@ func (h *handlerUser) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if request.Password != "" {
-		user.Password = request.Password
+		user.Password = password
 	}
 
 	data, err := h.UserRepository.UpdateUser(user)

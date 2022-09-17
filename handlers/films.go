@@ -20,15 +20,12 @@ type handlerFilm struct {
 	FilmRepository repositories.FilmRepository
 }
 
-var PathFile = os.Getenv("PATH_FILE")
-
 func HandlerFilm(FilmRepository repositories.FilmRepository) *handlerFilm {
 	return &handlerFilm{FilmRepository}
 }
 
 func (h *handlerFilm) FindFilms(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-
 	films, err := h.FilmRepository.FindFilm()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

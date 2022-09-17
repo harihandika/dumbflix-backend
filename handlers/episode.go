@@ -6,12 +6,11 @@ import (
 	"dumbflix/models"
 	"dumbflix/repositories"
 	"encoding/json"
-	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/gorilla/mux"
 )
 
@@ -57,10 +56,9 @@ func (h *handlerEpisode) GetEpisode(w http.ResponseWriter, r *http.Request) {
 
 func (h *handlerEpisode) CreateEpisode(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
-	userId := int(userInfo["id"].(float64))
+	// userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
+	// userId := int(userInfo["id"].(float64))
 
-	fmt.Println(userId)
 	dataContex := r.Context().Value("dataFile")
 	filename := dataContex.(string)
 	filmId, _ := strconv.Atoi(r.FormValue("film_id"))
@@ -82,7 +80,7 @@ func (h *handlerEpisode) CreateEpisode(w http.ResponseWriter, r *http.Request) {
 
 	episode := models.Episode{
 		Title:         request.Title,
-		ThumbnailFilm: request.ThumbnailFilm,
+		ThumbnailFilm: os.Getenv("PATH_FILE") + filename,
 		LinkFilm:      request.LinkFilm,
 		FilmID:        request.FilmID,
 	}
